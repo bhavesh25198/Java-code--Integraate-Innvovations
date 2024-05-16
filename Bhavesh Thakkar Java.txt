@@ -1,0 +1,132 @@
+package FeatureFiles;
+
+import java.awt.RenderingHints.Key;
+import java.time.Duration;
+import java.util.Set;
+
+import org.openqa.selenium.Alert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+
+public class UniswapUniqueId {
+    public static void main(String[] args) throws InterruptedException {
+        // Set the path to your ChromeDriver executable
+        System.setProperty("webdriver.chrome.driver", "D:\\ChromeDriver\\chromedriver.exe");
+
+        // Initialize ChromeDriver
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--remote-allow-origins=*");
+        options.addArguments("nkbihfbeogaeaoehlefnkodbefgpgknn.crx");
+        WebDriver driver = new ChromeDriver(options);
+        
+        // Open the Uniswap website
+        driver.get("https://app.uniswap.org/swap");
+        
+        driver.manage().window().maximize();
+
+        // Wait for the page to load
+        try {
+            Thread.sleep(5000); // Adjust sleep time as needed
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+        // Find and get the unique id number element
+        WebElement ConnectButton = driver.findElement(By.xpath("//button[@class='Web3Status__StyledConnectButton-sc-ed9c2a59-6 ExgPK']"));
+        ConnectButton.click();     
+        
+        Thread.sleep(5000);
+        
+        // Get the window handle of the main window
+        String mainWindowHandle = driver.getWindowHandle();
+
+        WebElement MetaButton = driver.findElement(By.xpath("//div[contains(text(),'MetaMask')]"));
+        MetaButton.click();
+
+        // Get all window handles
+        Set<String> allWindowHandles = driver.getWindowHandles();
+
+        // Loop through each window handle
+        for (String windowHandle : allWindowHandles) {
+            if (!windowHandle.equals(mainWindowHandle)) {
+                // Switch to the new window
+                driver.switchTo().window(windowHandle);
+                break;
+            }
+        }
+                
+        WebElement DownloadExtension = driver.findElement(By.xpath("//div[@class='Header__ButtonsWrapper-sc-1grwj6n-13 cdlHxq download-btn-desktop']//span[contains(text(),'Download')]"));
+                
+        DownloadExtension.click();
+        
+        WebElement installExtension = driver.findElement(By.xpath("//span[normalize-space()='Install MetaMask for Chrome']"));
+        installExtension.click();
+        
+        driver.findElement(By.xpath("//button[@class='Web3Status__StyledConnectButton-sc-ed9c2a59-6 ExgPK']")).click();
+      
+        try {
+            WebDriverWait wait = new WebDriverWait(driver,Duration.ofSeconds(30));
+            wait.ignoring(NoAlertPresentException.class)
+                .until(ExpectedConditions.alertIsPresent());
+
+            Alert alert = driver.switchTo().alert();
+            alert.accept();
+           
+        } catch (Exception e) {
+            System.out.println("No alert present.");
+        }    
+        
+        WebDriverWait myWait = new WebDriverWait(driver, Duration.ofSeconds(30));
+		myWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("onboarding__terms-checkbox")));
+		
+		WebElement checkBox = driver.findElement(By.id("onboarding__terms-checkbox"));
+		checkBox.click();
+		
+		WebElement createWallet = driver.findElement(By.xpath("//button[@class='button btn--rounded btn-primary']"));
+		createWallet.click();
+		
+		WebElement agree = driver.findElement(By.xpath("//button[@class='button btn--rounded btn-primary btn--large']"));
+		agree.click();
+
+		driver.findElement(By.id("create-password-new")).sendKeys("Admin123");
+		driver.findElement(By.id("create-password-confirm")).sendKeys("Admin123");
+		
+		driver.findElement(By.xpath("//input[@class='check-box fa fa-check-square check-box__checked']")).click();
+		driver.findElement(By.id("//button[@class='button btn--rounded btn-primary btn--large create-password__form--submit-button']")).click();
+		driver.findElement(By.id("secure-wallet-later")).click();
+		driver.findElement(By.xpath("//input[@class='check-box skip-srp-backup-popover__checkbox far fa-square']"));
+		driver.findElement(By.id("skip-srp-backup"));
+		driver.findElement(By.id("onboarding-complete-done"));
+		driver.findElement(By.id("pin-extension-next"));
+		driver.findElement(By.id("pin-extension-done"));
+		driver.findElement(By.xpath("//button[@class='mm-box mm-text mm-button-base mm-button-base--size-md mm-button-primary mm-text--body-md-medium mm-box--margin-top-8 mm-box--padding-0 mm-box--padding-right-4 mm-box--padding-left-4 mm-box--display-inline-flex mm-box--justify-content-center mm-box--align-items-center mm-box--width-full mm-box--color-primary-inverse mm-box--background-color-primary-default mm-box--rounded-pill']")).click();
+		
+		
+		driver.switchTo().window(mainWindowHandle);
+		
+		Actions action = new Actions(driver);
+		action.sendKeys(Keys.F5).click().perform();
+		ConnectButton.click();
+		MetaButton.click();
+		
+		driver.findElement(By.id("page-container-footer-next"));
+		driver.findElement(By.id("//button[@class='button btn--rounded btn-primary page-container__footer-button']"));
+		
+		WebElement uniqueKey = driver.findElement(By.xpath("//div[@class='sc-aXZVg Row-sc-34df4f97-0 dKubqp kdYshT']"));
+		String key = uniqueKey.getText();
+		
+		System.out.println("The unqiue wallet key is;"+ key);
+		
+		driver.close();
+		driver.quit();   
+    }
+}
